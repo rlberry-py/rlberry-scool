@@ -1,6 +1,5 @@
 from rlberry.agents import AgentWithSimplePolicy
 
-# Create random agent as a baseline
 class RandomAgent(AgentWithSimplePolicy):
     name = "RandomAgent"
 
