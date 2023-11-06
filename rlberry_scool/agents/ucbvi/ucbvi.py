@@ -6,7 +6,7 @@ from rlberry_scool.agents.ucbvi.utils import (
     update_value_and_get_action,
     update_value_and_get_action_sd,
 )
-from rlberry.exploration_tools.discrete_counter import DiscreteCounter
+from rlberry_research.exploration_tools.discrete_counter import DiscreteCounter
 from rlberry_scool.agents.dynprog.utils import (
     backward_induction_sd,
     backward_induction_reward_sd,
