@@ -14,7 +14,11 @@ import os
 import sys
 
 import sphinx_gallery  # noqa
-from sphinx_gallery.sorting import ExplicitOrder
+from sphinx_gallery.sorting import ExplicitOrder # noqa: F401
+
+import jupyterlite_sphinx  # noqa: F401
+
+
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
@@ -48,7 +52,9 @@ extensions = [
     "numpydoc",
     "sphinx_gallery.gen_gallery",
     "myst_parser",
+    "jupyterlite_sphinx",
 ]
+
 
 myst_enable_extensions = ["amsmath"]
 
@@ -74,7 +80,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "themes"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-#
+
 source_suffix = [".rst", ".md"]
 
 # The master toctree document.
@@ -110,12 +116,76 @@ html_logo = "https://raw.githubusercontent.com/rlberry-py/rlberry/main/assets/lo
 html_static_path = []
 html_extra_path = ["_video"]
 
+# jupyterlite
+
+def notebook_modification_function(notebook_content, notebook_filename):
+    notebook_content_str = str(notebook_content)
+    warning_template = "\n".join(
+        [
+            "<div class='alert alert-{message_class}'>",
+            "",
+            "# JupyterLite warning",
+            "",
+            "{message}",
+            "</div>",
+        ]
+    )
+
+    message_class = "warning"
+    message = (
+        "Running the scikit-learn examples in JupyterLite is experimental and you may"
+        " encounter some unexpected behavior.\n\nThe main difference is that imports"
+        " will take a lot longer than usual."
+    )
+
+    markdown = warning_template.format(message_class=message_class, message=message)
+
+    dummy_notebook_content = {"cells": []}
+    add_markdown_cell(dummy_notebook_content, markdown)
+
+    code_lines = []
+
+    if "seaborn" in notebook_content_str:
+        code_lines.append("%pip install seaborn")
+    if "plotly.express" in notebook_content_str:
+        code_lines.append("%pip install plotly")
+    if "skimage" in notebook_content_str:
+        code_lines.append("%pip install scikit-image")
+    if "fetch_" in notebook_content_str:
+        code_lines.extend(
+            [
+                "%pip install pyodide-http",
+                "import pyodide_http",
+                "pyodide_http.patch_all()",
+            ]
+        )
+    # always import matplotlib and pandas to avoid Pyodide limitation with
+    # imports inside functions
+    code_lines.extend(["import matplotlib", "import pandas"])
+
+    if code_lines:
+        code_lines = ["# JupyterLite-specific code"] + code_lines
+        code = "\n".join(code_lines)
+        add_code_cell(dummy_notebook_content, code)
+
+    notebook_content["cells"] = (
+        dummy_notebook_content["cells"] + notebook_content["cells"]
+    )
+
+
 # numpydoc_validation_checks = {"all"} # can be uncommented to get the warnings from numpy.
 
 sphinx_gallery_conf = {
     "doc_module": "rlberry_scool",
-    "backreferences_dir": os.path.join("generated"),
-    "reference_url": {"farmgym": None},
+    "backreferences_dir": os.path.join("modules", "generated"),
+    "show_memory": False,
+    "examples_dirs": ["../examples"],
+    "gallery_dirs": ["auto_examples"],
+    "reference_url": {"rlberry_scool": None},
     "matplotlib_animations": True,
     "remove_config_comments": True,
+    "jupyterlite": {
+    "notebook_modification_function": notebook_modification_function
 }
+}
+
