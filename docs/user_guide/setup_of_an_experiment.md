@@ -1,9 +1,9 @@
 # Setup of an experiment
-In the following, we explain how to construct a reinforcement learning experiment in rlberry. 
+In the following, we explain how to construct a reinforcement learning experiment in rlberry.
 
 ## Agent and environment
 
-The basic blocks 
+The basic blocks
 
 ``` python
 
@@ -13,4 +13,4 @@ The basic blocks
 
 
 
-## Training of 
+## Training of

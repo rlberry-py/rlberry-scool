@@ -4,15 +4,13 @@ import os
 ver_file = os.path.join("rlberry_scool", "_version.py")
 with open(ver_file) as f:
     exec(f.read())
-    
+
 packages = find_packages(exclude=["docs"])
 
 #
 # Base installation (interface only)
 #
-install_requires = [
-    "rlberry"
-]
+install_requires = ["rlberry"]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
