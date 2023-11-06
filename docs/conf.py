@@ -14,10 +14,9 @@ import os
 import sys
 
 import sphinx_gallery  # noqa
-from sphinx_gallery.sorting import ExplicitOrder # noqa: F401
+from sphinx_gallery.sorting import ExplicitOrder  # noqa: F401
 
 import jupyterlite_sphinx  # noqa: F401
-
 
 
 sys.path.insert(0, os.path.abspath("."))
@@ -120,6 +119,7 @@ html_extra_path = ["_video"]
 
 # jupyterlite
 
+
 def notebook_modification_function(notebook_content, notebook_filename):
     notebook_content_str = str(notebook_content)
     warning_template = "\n".join(
@@ -186,8 +186,5 @@ sphinx_gallery_conf = {
     "reference_url": {"rlberry_scool": None},
     "matplotlib_animations": True,
     "remove_config_comments": True,
-    "jupyterlite": {
-    "notebook_modification_function": notebook_modification_function
+    "jupyterlite": {"notebook_modification_function": notebook_modification_function},
 }
-}
-
