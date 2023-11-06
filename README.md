@@ -1,2 +1,2 @@
 # rlberry-scool
-Teaching Reinforcement Learning made easy. 
+Teaching Reinforcement Learning made easy.
