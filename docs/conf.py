@@ -108,7 +108,9 @@ html_theme_options = {"mathjax_path": mathjax_path}
 
 html_theme_path = ["themes"]
 
-html_logo = "https://raw.githubusercontent.com/rlberry-py/rlberry/main/assets/logo_wide.svg"
+html_logo = (
+    "https://raw.githubusercontent.com/rlberry-py/rlberry/main/assets/logo_wide.svg"
+)
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
