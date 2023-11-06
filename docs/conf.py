@@ -174,6 +174,7 @@ def notebook_modification_function(notebook_content, notebook_filename):
         dummy_notebook_content["cells"] + notebook_content["cells"]
     )
 
+
 jupyterlite_contents = ["tutorials"]
 # numpydoc_validation_checks = {"all"} # can be uncommented to get the warnings from numpy.
 
