@@ -11,7 +11,7 @@ class RandomAgent(AgentWithSimplePolicy):
         observation, info = self.env.reset()
         for ep in range(budget):
             action = self.policy(observation)
-            observation, reward, done, _ = self.env.step(action)
+            observation, reward, done, _, _ = self.env.step(action)
 
     def policy(self, observation):
         return self.env.action_space.sample()  # choose an action at random
