@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 import os
 
-__version__="0.0.1"
-
+ver_file = os.path.join("rlberry_scool", "_version.py")
+with open(ver_file) as f:
+    exec(f.read())
+    
 packages = find_packages(exclude=["docs"])
 
 #
