@@ -2,7 +2,7 @@ import numpy as np
 
 
 from rlberry.agents import AgentWithSimplePolicy
-from rlberry_scool .agents.dynprog.utils import backward_induction, value_iteration
+from rlberry_scool.agents.dynprog.utils import backward_induction, value_iteration
 from gymnasium.spaces import Discrete
 
 import rlberry
