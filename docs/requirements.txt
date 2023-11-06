@@ -5,3 +5,5 @@ numpydoc
 myst-parser
 git+https://github.com/sphinx-contrib/video
 matplotlib
+jupyterlite-sphinx
+jupyterlite-pyodide-kernel
