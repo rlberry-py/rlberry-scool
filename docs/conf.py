@@ -21,12 +21,12 @@ sys.path.insert(0, os.path.abspath("../"))
 
 # -- Project information -----------------------------------------------------
 
-project = "rlberry"
-copyright = "2022, rlberry team"
+project = "rlberry-scool"
+copyright = "2023, rlberry team"
 author = "rlberry team"
 
 
-ver_file = os.path.join("../rlberry", "_version.py")
+ver_file = os.path.join("../rlberry_scool", "_version.py")
 with open(ver_file) as f:
     exec(f.read())
 release = __version__
@@ -51,19 +51,6 @@ extensions = [
 ]
 
 myst_enable_extensions = ["amsmath"]
-# myst_enable_extensions = [
-#     "amsmath",
-#     "colon_fence",
-#     "deflist",
-#     "dollarmath",
-#     "fieldlist",
-#     "html_admonition",
-#     "html_image",
-#     "replacements",
-#     "smartquotes",
-#     "substitution",
-#     "tasklist",
-# ]
 
 autodoc_default_options = {
     "members": True,
@@ -115,8 +102,7 @@ html_theme_options = {"mathjax_path": mathjax_path}
 
 html_theme_path = ["themes"]
 
-html_logo = "../assets/logo_wide.svg"
-
+html_logo = "https://raw.githubusercontent.com/rlberry-py/rlberry/main/assets/logo_wide.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -127,17 +113,9 @@ html_extra_path = ["_video"]
 # numpydoc_validation_checks = {"all"} # can be uncommented to get the warnings from numpy.
 
 sphinx_gallery_conf = {
-    "doc_module": "rlberry",
+    "doc_module": "rlberry_scool",
     "backreferences_dir": os.path.join("generated"),
-    "reference_url": {"rlberry": None},
+    "reference_url": {"farmgym": None},
     "matplotlib_animations": True,
     "remove_config_comments": True,
-    "subsection_order": ExplicitOrder(
-        [
-            "../examples/demo_env",
-            "../examples/demo_agents",
-            "../examples/demo_bandits",
-            "../examples/demo_examples",
-        ]
-    ),
 }
