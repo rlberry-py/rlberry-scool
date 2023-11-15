@@ -2,13 +2,13 @@ import numpy as np
 import pytest
 
 import rlberry.seeding as seeding
-from rlberry.agents.dynprog import ValueIterationAgent
-from rlberry.agents.dynprog.utils import backward_induction
-from rlberry.agents.dynprog.utils import backward_induction_in_place
-from rlberry.agents.dynprog.utils import backward_induction_sd
-from rlberry.agents.dynprog.utils import backward_induction_reward_sd
-from rlberry.agents.dynprog.utils import bellman_operator
-from rlberry.agents.dynprog.utils import value_iteration
+from rlberry_scool.agents.dynprog import ValueIterationAgent
+from rlberry_scool.agents.dynprog.utils import backward_induction
+from rlberry_scool.agents.dynprog.utils import backward_induction_in_place
+from rlberry_scool.agents.dynprog.utils import backward_induction_sd
+from rlberry_scool.agents.dynprog.utils import backward_induction_reward_sd
+from rlberry_scool.agents.dynprog.utils import bellman_operator
+from rlberry_scool.agents.dynprog.utils import value_iteration
 from rlberry.envs.finite import FiniteMDP
 
 _rng = seeding.Seeder(123).rng

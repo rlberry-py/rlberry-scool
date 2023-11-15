@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from rlberry.seeding import Seeder
-from rlberry.agents.mbqvi import MBQVIAgent
+from rlberry_scool.agents.mbqvi import MBQVIAgent
 from rlberry.envs.finite import FiniteMDP
 
 

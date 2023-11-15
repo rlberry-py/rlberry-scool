@@ -1,6 +1,6 @@
 from rlberry.agents.agent import AgentWithSimplePolicy
 from rlberry_scool.agents.dynprog.utils import backward_induction, value_iteration
-from rlberry_scool.envs.finite.finite_mdp import FiniteMDP
+from rlberry.envs.finite_mdp import FiniteMDP
 
 
 class ValueIterationAgent(AgentWithSimplePolicy):
