@@ -330,10 +330,6 @@ class GridWorldSimple(FiniteMDP):
     def step(self, action):
         assert self.action_space.contains(action), "Invalid action!"
 
-        # save state for rendering
-        if self.is_render_enabled():
-            self.append_state_for_rendering(self.state)
-
         # take step
         next_state, reward, terminated, truncated, info = self.sample(
             self.state, action
