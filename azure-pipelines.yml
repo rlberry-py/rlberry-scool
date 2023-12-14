@@ -144,11 +144,6 @@ jobs:
       pip install -e .
     displayName: 'Install rlberry-scool'
 
-  # - script: |
-  #     pip wheel . -w dist\
-  #     pip install --pre --no-index --find-links dist\ rlberry
-  #   displayName: 'Install rlberry'
-
   - script: |
       pip install pytest==7.0.1 pytest-azurepipelines pytest-xvfb
       pytest --ignore=rlberry/network
