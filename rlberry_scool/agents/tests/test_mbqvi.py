@@ -3,7 +3,7 @@ import pytest
 
 from rlberry.seeding import Seeder
 from rlberry_scool.agents.mbqvi import MBQVIAgent
-from rlberry.envs.finite import FiniteMDP
+from rlberry.envs.finite_mdp import FiniteMDP
 
 
 @pytest.mark.parametrize("S, A", [(5, 2), (10, 4)])
