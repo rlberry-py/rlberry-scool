@@ -28,6 +28,9 @@ jobs:
     condition: eq(variables['Build.Reason'], 'PullRequest') # only run step if it is a PR
     name: checkPrLabel
 
+
+
+
 - job: 'linux'
   dependsOn: checkPrLabel
   # Condition: have ready for review label or on the main branch.
@@ -52,6 +55,9 @@ jobs:
       pip install -r requirements.txt
       sudo apt install libglu1-mesa
     displayName: 'Install dependencies'
+  - script: |
+      pip install git+https://github.com/rlberry-py/rlberry.git
+    displayName: 'Install rlberry'
   - script: |
       set -xe
       pip install -e .
@@ -93,17 +99,52 @@ jobs:
       python -m pip install --upgrade pip
       pip install -r requirements.txt
     displayName: 'Install dependencies'
-
+  - script: |
+      pip install git+https://github.com/rlberry-py/rlberry.git
+    displayName: 'Install rlberry'
   - script: |
       set -xe
       pip install -e .
     displayName: 'Install rlberry-scool'
-  - script: |
-      pip install git+https://github.com/DLR-RM/stable-baselines3@feat/gymnasium-support
-      pip install git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/gymnasium-support
-    displayName: 'Install stable-baselines3 for Gymnasium'
 
   - script: |
       pip install pytest==7.0.1 pytest-azurepipelines pytest-xvfb
       pytest
+    displayName: 'pytest'
+
+
+
+
+- job: 'windows'
+  dependsOn: checkPrLabel
+  condition: or(in(variables['Build.SourceBranch'], 'refs/heads/main'), eq(dependencies.checkPrLabel.outputs['checkPrLabel.prHasCILabel'], true))
+  pool:
+    vmImage: 'windows-2022'
+  strategy:
+    matrix:
+      Python310:
+        python.version: '3.10'
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: 'Install dependencies'
+
+  - script: |
+      pip install git+https://github.com/rlberry-py/rlberry.git
+    displayName: 'Install rlberry'
+  - script: |
+      set -xe
+      pip install -e .
+    displayName: 'Install rlberry-scool'
+
+  - script: |
+      pip install pytest==7.0.1 pytest-azurepipelines pytest-xvfb
+      pytest --ignore=rlberry/network
     displayName: 'pytest'

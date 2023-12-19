@@ -9,7 +9,7 @@ from rlberry_scool.agents.dynprog.utils import backward_induction_sd
 from rlberry_scool.agents.dynprog.utils import backward_induction_reward_sd
 from rlberry_scool.agents.dynprog.utils import bellman_operator
 from rlberry_scool.agents.dynprog.utils import value_iteration
-from rlberry.envs.finite import FiniteMDP
+from rlberry.envs.finite_mdp import FiniteMDP
 
 _rng = seeding.Seeder(123).rng
 
