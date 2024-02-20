@@ -1,1 +1,2 @@
-from .finite import GridWorldSimple
+from .finite import GridWorld
+from .finite import Chain
