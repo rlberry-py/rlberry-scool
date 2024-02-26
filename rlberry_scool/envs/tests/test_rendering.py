@@ -10,7 +10,7 @@ def test_chain_rendering():
     for tt in range(5):
         env.step(env.action_space.sample())
     with tempfile.TemporaryDirectory() as tmpdirname:
-        saving_path = tmpdirname + "/test_gif.mp4"
+        saving_path = tmpdirname + "/test_gif.gif"
         env.save_gif(saving_path)
         assert os.path.isfile(saving_path)
         try:
@@ -39,7 +39,7 @@ def test_gridworld_rendering():
 
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        saving_path = tmpdirname + "/test_gif.mp4"
+        saving_path = tmpdirname + "/test_gif.gif"
         env.save_gif(saving_path)
         assert os.path.isfile(saving_path)
         try:
