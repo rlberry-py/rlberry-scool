@@ -116,7 +116,7 @@ class GridWorld(RenderInterface2D, FiniteMDP):
         # rendering info
         self.set_clipping_area((0, self.ncols, 0, self.nrows))
         self.set_refresh_interval(100)  # in milliseconds
-        self.renderer_type = "pygame"
+        self.renderer_type = "opengl"
 
     @classmethod
     def from_layout(
