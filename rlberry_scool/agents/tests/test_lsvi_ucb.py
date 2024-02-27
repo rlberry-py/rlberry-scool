@@ -3,7 +3,7 @@ import pytest
 from rlberry_scool.agents.features import FeatureMap
 from rlberry_scool.agents.linear.lsvi_ucb import LSVIUCBAgent
 from rlberry_scool.agents.dynprog import ValueIterationAgent
-from rlberry_scool.envs.finite import GridWorldSimple
+from rlberry_scool.envs.finite import GridWorld
 
 
 class OneHotFeatureMap(FeatureMap):
@@ -30,7 +30,7 @@ class RandomFeatMap(FeatureMap):
 
 @pytest.mark.parametrize("FeatMapClass", [OneHotFeatureMap, RandomFeatMap])
 def test_lsvi_ucb_matrix_inversion(FeatMapClass):
-    env = GridWorldSimple(nrows=3, ncols=3, walls=())
+    env = GridWorld(nrows=3, ncols=3, walls=())
     env.reseed(123)
 
     def feature_map_fn(_env):
@@ -113,7 +113,7 @@ def test_lsvi_without_bonus():
             agent.total_time_steps += 1
             count += 1
 
-    env = GridWorldSimple(nrows=2, ncols=2, walls=(), success_probability=0.95)
+    env = GridWorld(nrows=2, ncols=2, walls=(), success_probability=0.95)
     env.reseed(123)
 
     def feature_map_fn(_env):
@@ -147,7 +147,7 @@ def test_lsvi_without_bonus():
 
 
 def test_lsvi_random_exploration():
-    env = GridWorldSimple(nrows=2, ncols=2, walls=(), success_probability=0.95)
+    env = GridWorld(nrows=2, ncols=2, walls=(), success_probability=0.95)
     env.reseed(123)
 
     def feature_map_fn(_env):
@@ -184,7 +184,7 @@ def test_lsvi_random_exploration():
 
 
 def test_lsvi_optimism():
-    env = GridWorldSimple(nrows=2, ncols=2, walls=())
+    env = GridWorld(nrows=2, ncols=2, walls=())
 
     def feature_map_fn(_env):
         return OneHotFeatureMap(_env.observation_space.n, _env.action_space.n)
