@@ -7,6 +7,11 @@ Changelog
 Dev version
 -----------
 
+ * nothing
+
+Version 0.7.0
+-------------
+
 *PR #8 et #9*
  * moving chain and gridworld to rlberry_scool 
 
