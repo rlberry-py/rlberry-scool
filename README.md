@@ -1,6 +1,7 @@
 
-#<!-- The badges -->  TODO!!!
-#<p align="center">
+<!-- The badges --> 
+<!--  TODO!!!
+<p align="center">
 #   <a href="https://pypi.org/project/rlberry/">
 #      <img alt="Python Version" src="https://img.shields.io/badge/python-3.11-blue">
 #   </a>
@@ -12,7 +13,7 @@
 #     </a>
 #</p>
 #![](https://img.shields.io/codecov/c/github/rlberry-py/rlberry-scool)
-
+-->  
 
 
 # rlberry-scool
