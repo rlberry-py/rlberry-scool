@@ -9,7 +9,7 @@ Dev version
 
  * nothing
 
-Version 0.7.0
+Version 0.7.1
 -------------
 
 *PR #8 et #9*
