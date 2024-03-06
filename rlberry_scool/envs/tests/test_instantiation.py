@@ -4,7 +4,7 @@ import pytest
 from rlberry.envs import gym_make, PipelineEnv
 from rlberry_scool.envs.finite import Chain
 from rlberry_scool.envs.finite import GridWorld
-from rlberry_scool.envs.finite import discrete_mountain_car
+from rlberry_scool.envs.finite import get_discrete_mountain_car_env
 from rlberry.rendering.render_interface import RenderInterface2D
 
 classes = [
@@ -102,7 +102,7 @@ def test_pipeline():
 
 
 def test_discrete_mc():
-    env = discrete_mountain_car()
+    env = get_discrete_mountain_car_env()
     env.reset()
     done = False
     while not done:
