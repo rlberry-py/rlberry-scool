@@ -71,7 +71,6 @@ def test_gridworld_from_layout():
     env.reset()
 
 
-
 def test_pipeline():
     from rlberry.wrappers import RescaleRewardWrapper
     from rlberry.wrappers.discretize_state import DiscretizeStateWrapper
