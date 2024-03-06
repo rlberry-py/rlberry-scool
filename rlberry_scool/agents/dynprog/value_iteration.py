@@ -26,7 +26,7 @@ class ValueIterationAgent(AgentWithSimplePolicy):
         (when horizon is None).
     **kwargs : Keyword Arguments
          Arguments to be passed to `AgentWithSimplePolicy.__init__(self, env, **kwargs)` (:class:`~rlberry.agents.AgentWithSimplePolicy`).
-   
+
 
     """
 
