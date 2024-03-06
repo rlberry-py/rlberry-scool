@@ -124,29 +124,9 @@ class DiscretizeStateWrapper(gym.ObservationWrapper):
         return continuous_state
 
 
-class MountainCarRewardWrapper(gym.RewardWrapper):
-    def __init__(self, env):
-        super().__init__(env)
-
-    def step(self, action):
-        next_state, reward, term, trunc, info = self.env.step(action)
-        if term:
-            reward = 1.0
-        else:
-            reward = 0.0
-
-        return (
-            next_state,
-            reward,
-            term,
-            trunc,
-            info,
-        )
-
 
 def get_discrete_mountain_car_env():
-    env_with_continuous_states = MountainCarRewardWrapper(
-        gym.make("MountainCar-v0", render_mode="rgb_array")
-    )
+    env_with_continuous_states = gym.make("MountainCar-v0", render_mode="rgb_array")
+    
     env = DiscretizeStateWrapper(env_with_continuous_states, n_bins=10)
     return env
