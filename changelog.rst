@@ -3,11 +3,16 @@
 Changelog
 =========
 
-
 Dev version
 -----------
 
- * nothing
+nothing
+
+Version 0.7.2
+-----------
+
+ *Github PR #14*
+ * Add environment discrete montaincar
 
 Version 0.7.1
 -------------
