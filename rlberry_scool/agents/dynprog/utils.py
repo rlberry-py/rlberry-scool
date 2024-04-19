@@ -1,8 +1,6 @@
 import numpy as np
-from rlberry.utils.jit_setup import numba_jit
 
 
-@numba_jit
 def backward_induction(R, P, horizon, gamma=1.0, vmax=np.inf):
     """Backward induction to compute Q and V functions in the finite horizon
     setting.
@@ -50,7 +48,6 @@ def backward_induction(R, P, horizon, gamma=1.0, vmax=np.inf):
     return Q, V
 
 
-@numba_jit
 def backward_induction_reward_sd(Q, V, R, P, gamma=1.0, vmax=np.inf):
     """
     Backward induction to compute Q and V functions in
@@ -101,7 +98,6 @@ def backward_induction_reward_sd(Q, V, R, P, gamma=1.0, vmax=np.inf):
                 V[hh, ss] = vmax
 
 
-@numba_jit
 def backward_induction_in_place(Q, V, R, P, horizon, gamma=1.0, vmax=np.inf):
     """
     Backward induction to compute Q and V functions in
@@ -148,7 +144,6 @@ def backward_induction_in_place(Q, V, R, P, horizon, gamma=1.0, vmax=np.inf):
                 V[hh, ss] = vmax
 
 
-@numba_jit
 def backward_induction_sd(Q, V, R, P, gamma=1.0, vmax=np.inf):
     """
     In-place implementation of backward induction to compute Q and V functions
@@ -195,7 +190,6 @@ def backward_induction_sd(Q, V, R, P, gamma=1.0, vmax=np.inf):
                 V[hh, ss] = vmax
 
 
-@numba_jit
 def value_iteration(R, P, gamma, epsilon=1e-6):
     """
     Value iteration for discounted problems.
@@ -233,7 +227,6 @@ def value_iteration(R, P, gamma, epsilon=1e-6):
     return Q, V, n_it
 
 
-@numba_jit
 def bellman_operator(Q, R, P, gamma):
     """
     Bellman optimality operator for Q functions

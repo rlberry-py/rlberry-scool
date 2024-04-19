@@ -1,15 +1,13 @@
 import numpy as np
 from rlberry.agents import AgentWithSimplePolicy
 from gymnasium.spaces import Discrete
-from rlberry.utils.jit_setup import numba_jit
 
 import rlberry
 
 logger = rlberry.logger
 
 
-@numba_jit
-def run_lsvi_jit(
+def run_lsvi(
     dim,
     horizon,
     bonus_factor,
@@ -23,7 +21,7 @@ def run_lsvi_jit(
     total_time_steps,
 ):
     """
-    Jit version of Least-Squares Value Iteration.
+    Least-Squares Value Iteration.
 
     Parameters
     ----------
@@ -345,7 +343,7 @@ class LSVIUCBAgent(AgentWithSimplePolicy):
 
     def _run_lsvi(self, bonus_factor):
         # run value iteration
-        q_w = run_lsvi_jit(
+        q_w = run_lsvi(
             self.dim,
             self.horizon,
             bonus_factor,
