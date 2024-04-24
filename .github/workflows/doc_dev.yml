@@ -25,6 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install .
+          pip install git+https://github.com/rlberry-py/rlberry
           pip install -r docs/requirements.txt
       - name: Sphinx build
         run: |
