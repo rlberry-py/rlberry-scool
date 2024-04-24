@@ -24,12 +24,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install .
-          pip install git+https://github.com/rlberry-py/rlberry
-          pip install -r docs/requirements.txt
+          python -m pip install -U sphinx
+          python -m pip install .
+          python -m pip install git+https://github.com/rlberry-py/rlberry
+          python -m pip install -r docs/requirements.txt
       - name: Sphinx build
         run: |
-          sphinx-build docs _build
+          python -m sphinx docs _build
       - uses: actions/checkout@v4
         with:
           # This is necessary so that we have the tags.
