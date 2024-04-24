@@ -18,3 +18,5 @@
 
 # rlberry-scool
 Teaching Reinforcement Learning made easy.
+
+Preliminary documentation can be found here : https://rlberry-py.github.io/rlberry-scool/#
