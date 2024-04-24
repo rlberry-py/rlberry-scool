@@ -8,6 +8,15 @@ Dev version
 
 nothing
 
+Version 0.7.3
+-------------
+
+ *NO PR*
+ * starting doc
+
+ *PR #12*
+ * copy UCBVI from rlberry research
+
 Version 0.7.2
 -----------
 
