@@ -1,8 +1,8 @@
 .. _api:
 
-###########
-rlberry API
-###########
+#################
+rlberry-scool API
+#################
 
 
 Manager

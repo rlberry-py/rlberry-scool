@@ -7,4 +7,3 @@ git+https://github.com/sphinx-contrib/video
 matplotlib
 nbsphinx
 sphinx-tabs
-rlberry

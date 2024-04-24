@@ -26,7 +26,6 @@ project = "rlberry-scool"
 copyright = "2023, rlberry team"
 author = "rlberry team"
 
-
 ver_file = os.path.join("../rlberry_scool", "_version.py")
 with open(ver_file) as f:
     exec(f.read())
