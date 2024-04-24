@@ -10,7 +10,7 @@ packages = find_packages(exclude=["docs"])
 #
 # Base installation (interface only)
 #
-install_requires = ["rlberry"]
+install_requires = ["rlberry[extras]"]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

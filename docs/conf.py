@@ -47,8 +47,9 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinxcontrib.video",
     "numpydoc",
-    "sphinx_gallery.gen_gallery",
-    "myst_nb",
+    "myst_parser",
+    # "sphinx_gallery.gen_gallery",
+    "nbsphinx"
 ]
 
 nb_execution_mode = "off"
@@ -109,6 +110,11 @@ html_logo = (
     "https://raw.githubusercontent.com/rlberry-py/rlberry/main/assets/logo_wide.svg"
 )
 
+myst_admonition_enable = True
+myst_deflist_enable = True
+myst_heading_anchors = 3
+
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -117,13 +123,13 @@ html_extra_path = ["_video"]
 
 # numpydoc_validation_checks = {"all"} # can be uncommented to get the warnings from numpy.
 
-sphinx_gallery_conf = {
-    "doc_module": "rlberry_scool",
-    "backreferences_dir": os.path.join("modules", "generated"),
-    "show_memory": False,
-    "examples_dirs": ["../examples"],
-    "gallery_dirs": ["auto_examples"],
-    "reference_url": {"rlberry_scool": None},
-    "matplotlib_animations": True,
-    "remove_config_comments": True,
-}
+# sphinx_gallery_conf = {
+#     "doc_module": "rlberry_scool",
+#     "backreferences_dir": os.path.join("modules", "generated"),
+#     "show_memory": False,
+#     "examples_dirs": ["../examples"],
+#     "gallery_dirs": ["auto_examples"],
+#     "reference_url": {"rlberry_scool": None},
+#     "matplotlib_animations": True,
+#     "remove_config_comments": True,
+# }

@@ -1,21 +1,21 @@
+.. _api:
+
 ###########
 rlberry API
 ###########
 
-.. currentmodule:: rlberry
 
 Manager
 ====================
 
-Main classes
---------------------
+Main classe
+-----------
 
 .. autosummary::
   :toctree: generated/
   :template: class.rst
 
-
-    manager.ExperimentManager
+    rlberry.manager.ExperimentManager
 
 Evaluation and plot
 --------------------
@@ -24,13 +24,40 @@ Evaluation and plot
    :toctree: generated/
    :template: function.rst
 
-   manager.evaluate_agents
-   manager.plot_writer_data
+   rlberry.manager.evaluate_agents
+   rlberry.manager.plot_writer_data
+   rlberry.manager.read_writer_data
+   rlberry.manager.compare_agents
 
+.. autosummary::
+  :toctree: generated/
+  :template: class.rst
 
-Agents
-====================
+   rlberry.manager.AdastopComparator
+   
+Agents & Environments
+=====================
 
+Basic agents
+------------
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   rlberry_scool.agents.dynprog.ValueIteration
+   rlberry_scool.agents.linear.LSVIUCBAgent
+   rlberry_scool.agents.tabular_rl.QLAgent
+   rlberry_scool.agents.tabular_rl.SARSAAgent
+
+Basic environments
+------------------
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    rlberry_scool.envs.GridWorld
+    rlberry_scool.envs.Chain
+   
 Agent importation tools
 -----------------------
 
@@ -38,12 +65,7 @@ Agent importation tools
    :toctree: generated/
    :template: class.rst
 
-   agents.stable_baselines.StableBaselinesAgent
-
-Environments
-============
-
-
+   rlberry.agents.stable_baselines.StableBaselinesAgent
 
 Environment tools
 -----------------
@@ -52,10 +74,7 @@ Environment tools
    :toctree: generated/
    :template: function.rst
 
-    envs.gym_make
-    envs.atari_make
-    envs.PipelineEnv
-
+    rlberry.envs.gym_make
 
 Seeding
 ====================
@@ -64,11 +83,8 @@ Seeding
    :toctree: generated/
    :template: function.rst
 
-   seeding.safe_reseed
-   seeding.set_external_seed
-
-Utilities, Logging & Typing
-===========================
+   rlberry.seeding.safe_reseed
+   rlberry.seeding.set_external_seed
 
 Environment Wrappers
 ====================
@@ -77,11 +93,8 @@ Environment Wrappers
   :toctree: generated/
   :template: class.rst
 
-  wrappers.discretize_state.DiscretizeStateWrapper
-  wrappers.gym_utils.OldGymCompatibilityWrapper
-  wrappers.RescaleRewardWrapper
-  wrappers.vis2d.Vis2dWrapper
-  wrappers.WriterWrapper
+  rlberry.wrappers.discretize_state.DiscretizeStateWrapper
+  rlberry.wrappers.RescaleRewardWrapper
+  rlberry.wrappers.WriterWrapper
 
-Bandits
-=======
+
