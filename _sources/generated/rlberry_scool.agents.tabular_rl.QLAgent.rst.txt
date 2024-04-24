@@ -1,0 +1,12 @@
+﻿:mod:`rlberry_scool.agents.tabular_rl`.QLAgent
+=====================================================
+
+.. currentmodule:: rlberry_scool.agents.tabular_rl
+
+.. autoclass:: QLAgent
+
+.. include:: rlberry_scool.agents.tabular_rl.QLAgent.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

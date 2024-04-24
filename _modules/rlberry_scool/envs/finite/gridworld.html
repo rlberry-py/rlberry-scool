@@ -1,0 +1,743 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  <title>rlberry_scool.envs.finite.gridworld &mdash; rlberry-scool v0.7.3 documentation</title>
+  
+  <link rel="canonical" href="https://rlberry.readthedocs.io/en/stable/_modules/rlberry_scool/envs/finite/gridworld.html" />
+
+  
+
+  <link rel="stylesheet" href="../../../../_static/css/vendor/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+<script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+<script src="../../../../_static/jquery.js"></script> 
+</head>
+<body>
+
+
+<nav id="navbar" class="sk-docs-navbar navbar navbar-expand-md navbar-light bg-light py-0">
+  <div class="container-fluid sk-docs-container px-0">
+    <button
+      id="sk-navbar-toggler"
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="sk-navbar-collapse collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../../../../index.html">Index</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../../../../installation.html">Install</a>
+        </li>
+        <!-- <li class="nav-item"> -->
+        <!--   <a class="sk-nav-link nav-link" href="../../../../auto_examples/index.html">Examples</a> -->
+        <!-- </li> -->
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../../../../api.html">API</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="https://github.com/rlberry-py/rlberry-scool">github</a>
+        </li>
+        <!--
+        <li class="nav-item dropdown nav-more-item-dropdown">
+          <a class="sk-nav-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          </div>
+        </li>-->
+    </ul>
+      <div id="searchbox" role="search">
+          <div class="searchformwrapper">
+            <form action="https://duckduckgo.com/">
+            <input type="hidden" id="sites" name="sites" value="https://rlberry.readthedocs.io">
+            <input type="search" placeholder="Search &hellip;" value="" name="q" />
+            <input class="sk-search-text-btn" type="submit" value="Go" /></form>
+
+          </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="d-flex" id="sk-doc-wrapper">
+    <input type="checkbox" name="sk-toggle-checkbox" id="sk-toggle-checkbox">
+    <label id="sk-sidemenu-toggle" class="sk-btn-toggle-toc btn sk-btn-primary" for="sk-toggle-checkbox">Toggle Menu</label>
+    <div id="sk-sidebar-wrapper" class="border-right">
+      <div class="sk-sidebar-toc-wrapper">
+        <div class="sk-sidebar-toc-logo">
+
+        </div>
+	<br>
+            <div class="sk-sidebar-toc">
+              
+            </div>
+      </div>
+    </div>
+    <div id="sk-page-content-wrapper">
+      <div class="sk-page-content container-fluid body px-md-3" role="main">
+        
+  <h1>Source code for rlberry_scool.envs.finite.gridworld</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
+
+<span class="kn">from</span> <span class="nn">rlberry.envs.finite_mdp</span> <span class="kn">import</span> <span class="n">FiniteMDP</span>
+<span class="kn">from</span> <span class="nn">rlberry_scool.envs.finite</span> <span class="kn">import</span> <span class="n">gridworld_utils</span>
+<span class="kn">from</span> <span class="nn">rlberry.rendering</span> <span class="kn">import</span> <span class="n">Scene</span><span class="p">,</span> <span class="n">GeometricPrimitive</span><span class="p">,</span> <span class="n">RenderInterface2D</span>
+<span class="kn">from</span> <span class="nn">rlberry.rendering.common_shapes</span> <span class="kn">import</span> <span class="n">circle_shape</span>
+
+
+<span class="kn">import</span> <span class="nn">rlberry</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">rlberry</span><span class="o">.</span><span class="n">logger</span>
+
+
+<div class="viewcode-block" id="GridWorld"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld">[docs]</a><span class="k">class</span> <span class="nc">GridWorld</span><span class="p">(</span><span class="n">RenderInterface2D</span><span class="p">,</span> <span class="n">FiniteMDP</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple GridWorld environment.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    nrows : int</span>
+<span class="sd">        number of rows</span>
+<span class="sd">    ncols : int</span>
+<span class="sd">        number of columns</span>
+<span class="sd">    start_coord : tuple</span>
+<span class="sd">        tuple with coordinates of initial position</span>
+<span class="sd">    terminal_states : tuple</span>
+<span class="sd">        ((row_0, col_0), (row_1, col_1), ...) = coordinates of</span>
+<span class="sd">        terminal states</span>
+<span class="sd">    success_probability : double</span>
+<span class="sd">        probability of moving in the chosen direction</span>
+<span class="sd">    reward_at: dict</span>
+<span class="sd">        dictionary, keys = tuple containing coordinates, values = reward</span>
+<span class="sd">        at each coordinate</span>
+<span class="sd">    walls : tuple</span>
+<span class="sd">        ((row_0, col_0), (row_1, col_1), ...) = coordinates of walls</span>
+<span class="sd">    default_reward : double</span>
+<span class="sd">        reward received at states not in  &#39;reward_at&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;GridWorld&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nrows</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">start_coord</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">terminal_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">success_probability</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">reward_at</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">walls</span><span class="o">=</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">default_reward</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># Grid dimensions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
+
+        <span class="c1"># Reward parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_reward</span> <span class="o">=</span> <span class="n">default_reward</span>
+
+        <span class="c1"># Default config</span>
+        <span class="k">if</span> <span class="n">reward_at</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span> <span class="o">=</span> <span class="n">reward_at</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span> <span class="o">=</span> <span class="p">{(</span><span class="n">nrows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">walls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">walls</span> <span class="o">=</span> <span class="n">walls</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">walls</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">if</span> <span class="n">terminal_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal_states</span> <span class="o">=</span> <span class="n">terminal_states</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal_states</span> <span class="o">=</span> <span class="p">()</span>
+
+        <span class="c1"># Probability of going left/right/up/down when choosing the</span>
+        <span class="c1"># correspondent action</span>
+        <span class="c1"># The remaining probability mass is distributed uniformly to other</span>
+        <span class="c1"># available actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success_probability</span> <span class="o">=</span> <span class="n">success_probability</span>
+
+        <span class="c1"># Start coordinate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_coord</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">start_coord</span><span class="p">)</span>
+
+        <span class="c1"># Actions (string to index &amp; index to string)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a_str2idx</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a_idx2str</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;down&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;up&quot;</span><span class="p">}</span>
+
+        <span class="c1"># --------------------------------------------</span>
+        <span class="c1"># The variables below are defined in _build()</span>
+        <span class="c1"># --------------------------------------------</span>
+
+        <span class="c1"># Mappings (state index) &lt;-&gt; (state coordinate)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># MDP parameters for base class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Na</span> <span class="o">=</span> <span class="mi">4</span>
+
+        <span class="c1"># Build</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">()</span>
+        <span class="n">init_state_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[</span><span class="n">start_coord</span><span class="p">]</span>
+        <span class="n">FiniteMDP</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">initial_state_distribution</span><span class="o">=</span><span class="n">init_state_idx</span>
+        <span class="p">)</span>
+        <span class="n">RenderInterface2D</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_range</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+        <span class="c1"># rendering info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_clipping_area</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_refresh_interval</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># in milliseconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderer_type</span> <span class="o">=</span> <span class="s2">&quot;opengl&quot;</span>
+
+<div class="viewcode-block" id="GridWorld.from_layout"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.from_layout">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_layout</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">gridworld_utils</span><span class="o">.</span><span class="n">DEFAULT_LAYOUT</span><span class="p">,</span> <span class="n">success_probability</span><span class="o">=</span><span class="mf">0.95</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create GridWorld instance from a layout.</span>
+
+<span class="sd">        Layout symbols:</span>
+
+<span class="sd">        &#39;#&#39; : wall</span>
+<span class="sd">        &#39;r&#39; : reward of 1, terminal state</span>
+<span class="sd">        &#39;R&#39; : reward of 1, non-terminal state</span>
+<span class="sd">        &#39;T&#39; : terminal state</span>
+<span class="sd">        &#39;I&#39; : initial state (if several, start uniformly among I)</span>
+<span class="sd">        &#39;O&#39; : empty state</span>
+<span class="sd">        any other char : empty state</span>
+
+<span class="sd">        Layout example:</span>
+
+<span class="sd">        IOOOO # OOOOO  O OOOOR</span>
+<span class="sd">        OOOOO # OOOOO  # OOOOO</span>
+<span class="sd">        OOOOO O OOOOO  # OOOOO</span>
+<span class="sd">        OOOOO # OOOOO  # OOOOO</span>
+<span class="sd">        IOOOO # OOOOO  # OOOOr</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">gridworld_utils</span><span class="o">.</span><span class="n">get_layout_info</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="n">nrows</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;nrows&quot;</span><span class="p">]</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;ncols&quot;</span><span class="p">]</span>
+        <span class="n">walls</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;walls&quot;</span><span class="p">]</span>
+        <span class="n">reward_at</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;reward_at&quot;</span><span class="p">]</span>
+        <span class="n">terminal_states</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;terminal_states&quot;</span><span class="p">]</span>
+        <span class="n">initial_states_coord</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;initial_states&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Init base class</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">,</span>
+            <span class="n">ncols</span><span class="o">=</span><span class="n">ncols</span><span class="p">,</span>
+            <span class="n">terminal_states</span><span class="o">=</span><span class="n">terminal_states</span><span class="p">,</span>
+            <span class="n">success_probability</span><span class="o">=</span><span class="n">success_probability</span><span class="p">,</span>
+            <span class="n">reward_at</span><span class="o">=</span><span class="n">reward_at</span><span class="p">,</span>
+            <span class="n">walls</span><span class="o">=</span><span class="n">walls</span><span class="p">,</span>
+            <span class="n">default_reward</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Set initial distribution</span>
+        <span class="n">distr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">init_coord</span> <span class="ow">in</span> <span class="n">initial_states_coord</span><span class="p">:</span>
+            <span class="n">init_index</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[</span><span class="n">init_coord</span><span class="p">]</span>
+            <span class="n">distr</span><span class="p">[</span><span class="n">init_index</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">distr</span> <span class="o">=</span> <span class="n">distr</span> <span class="o">/</span> <span class="n">distr</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">set_initial_state_distribution</span><span class="p">(</span><span class="n">distr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">env</span></div>
+
+<div class="viewcode-block" id="GridWorld.is_terminal"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.is_terminal">[docs]</a>    <span class="k">def</span> <span class="nf">is_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">state_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">state_coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal_states</span></div>
+
+<div class="viewcode-block" id="GridWorld.reward_fn"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.reward_fn">[docs]</a>    <span class="k">def</span> <span class="nf">reward_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">):</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_reward</span></div>
+
+    <span class="k">def</span> <span class="nf">_build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_state_mappings_and_states</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_transition_probabilities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_mean_rewards</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_build_state_mappings_and_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)]</span> <span class="o">=</span> <span class="n">index</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)</span>
+                    <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_mean_rewards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Na</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">A</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">aa</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+                <span class="n">mean_r</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">ns</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+                    <span class="n">mean_r</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_fn</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="n">ss</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">ns</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">ss</span><span class="p">,</span> <span class="n">aa</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_r</span>
+
+    <span class="k">def</span> <span class="nf">_build_transition_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span>
+        <span class="n">Na</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Na</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Na</span><span class="p">,</span> <span class="n">Ns</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ns</span><span class="p">):</span>
+            <span class="n">s_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_neighbors</span><span class="p">(</span><span class="o">*</span><span class="n">s_coord</span><span class="p">)</span>
+            <span class="n">valid_neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="n">neighbors</span><span class="p">[</span><span class="n">nn</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">neighbors</span> <span class="k">if</span> <span class="n">neighbors</span><span class="p">[</span><span class="n">nn</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">n_valid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_neighbors</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Na</span><span class="p">):</span>  <span class="c1"># each action corresponds to a direction</span>
+                <span class="k">for</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+                    <span class="n">next_s_coord</span> <span class="o">=</span> <span class="n">neighbors</span><span class="p">[</span><span class="n">nn</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">next_s_coord</span> <span class="ow">in</span> <span class="n">valid_neighbors</span><span class="p">:</span>
+                        <span class="n">next_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[</span><span class="n">next_s_coord</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">nn</span><span class="p">:</span>  <span class="c1"># action is successful</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">next_s</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_probability</span> <span class="o">+</span> <span class="p">(</span>
+                                <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_probability</span>
+                            <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_valid</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">neighbors</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_neighbors</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">n_valid</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">next_s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_probability</span>
+                                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_valid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">aux</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># left</span>
+        <span class="n">aux</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># right</span>
+        <span class="n">aux</span><span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>  <span class="c1"># up</span>
+        <span class="n">aux</span><span class="p">[</span><span class="s2">&quot;down&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>  <span class="c1"># down</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">direction_str</span> <span class="ow">in</span> <span class="n">aux</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_str2idx</span><span class="p">[</span><span class="n">direction_str</span><span class="p">]</span>
+            <span class="n">next_s</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[</span><span class="n">direction_str</span><span class="p">]</span>
+            <span class="n">neighbors</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">next_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_valid</span><span class="p">(</span><span class="o">*</span><span class="n">next_s</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">neighbors</span>
+
+    <span class="k">def</span> <span class="nf">get_transition_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">),</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">neighbors</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_valid</span><span class="p">(</span><span class="o">*</span><span class="n">coord</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">row</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">col</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_build_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">)]</span>
+        <span class="n">grid_idx</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">:</span>
+                    <span class="n">grid</span><span class="p">[</span><span class="n">rr</span><span class="p">][</span><span class="n">cc</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">grid</span><span class="p">[</span><span class="n">rr</span><span class="p">][</span><span class="n">cc</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;o &quot;</span>
+                <span class="n">grid_idx</span><span class="p">[</span><span class="n">rr</span><span class="p">][</span><span class="n">cc</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">rr</span><span class="p">,</span> <span class="n">cc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span><span class="p">:</span>
+            <span class="n">rwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span><span class="p">[(</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">rwd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">grid</span><span class="p">[</span><span class="n">rr</span><span class="p">][</span><span class="n">cc</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;+ &quot;</span>
+            <span class="k">if</span> <span class="n">rwd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">grid</span><span class="p">[</span><span class="n">rr</span><span class="p">][</span><span class="n">cc</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+
+        <span class="n">grid</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="bp">self</span><span class="o">.</span><span class="n">start_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;I &quot;</span>
+
+        <span class="c1"># current position of the agent</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
+        <span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;A &quot;</span>
+
+        <span class="c1">#</span>
+        <span class="n">grid_ascii</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rr</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">:</span>
+                <span class="n">grid_ascii</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">rr</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">grid_ascii</span> <span class="o">+=</span> <span class="mi">3</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">)]</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_ascii</span> <span class="o">=</span> <span class="n">grid_ascii</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_idx</span> <span class="o">=</span> <span class="n">grid_idx</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_ascii</span>
+
+    <span class="k">def</span> <span class="nf">display_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span>
+        <span class="n">grid_values</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">9</span><span class="p">)]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">s_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ns</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">s_idx</span><span class="p">]</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">s_idx</span><span class="p">]</span>
+            <span class="n">grid_values</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%0.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+
+        <span class="n">grid_values_ascii</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rr</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">:</span>
+                <span class="n">grid_values_ascii</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">grid_values</span><span class="p">[</span><span class="n">rr</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">grid_values_ascii</span> <span class="o">+=</span> <span class="mi">4</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span> <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">)]</span>
+                <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">grid_values_ascii</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">print_transition_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">s_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord2index</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">s_idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;wall!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">a_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_str2idx</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">next_s_idx</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="n">a_idx</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">prob</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;to (</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">) with prob </span><span class="si">%f</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">next_s_idx</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">prob</span><span class="p">,))</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">render_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_ascii</span><span class="p">())</span>
+
+<div class="viewcode-block" id="GridWorld.step"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">action</span><span class="p">),</span> <span class="s2">&quot;Invalid action!&quot;</span>
+
+        <span class="c1"># save state for rendering</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_render_enabled</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_state_for_rendering</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="c1"># take step</span>
+        <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+        <span class="k">return</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># Code for rendering</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="GridWorld.get_layout_array"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.get_layout_array">[docs]</a>    <span class="k">def</span> <span class="nf">get_layout_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_walls_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array &#39;layout&#39; of shape (nrows, ncols) such that:</span>
+
+<span class="sd">            layout[row, col] = state_data[self.coord2idx[row, col]]</span>
+
+<span class="sd">        If (row, col) is a wall:</span>
+
+<span class="sd">            layout[row, col] = fill_walls_with</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state_data : np.array, default = None</span>
+<span class="sd">            Array of shape (self.observation_space.n,)</span>
+<span class="sd">        fill_walls_with : float, default: np.nan</span>
+<span class="sd">            Value to set in the layout in the coordinates corresponding to walls.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Gridworld layout array of shape (nrows, ncols).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">state_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">state_data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">n</span><span class="p">,)</span>
+            <span class="n">data_rows</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">]</span>
+            <span class="n">data_cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">]</span>
+            <span class="n">layout</span><span class="p">[</span><span class="n">data_rows</span><span class="p">,</span> <span class="n">data_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">state_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state_rr</span><span class="p">,</span> <span class="n">state_cc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
+            <span class="n">layout</span><span class="p">[</span><span class="n">state_rr</span><span class="p">,</span> <span class="n">state_cc</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="n">walls_rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">ww</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ww</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">]</span>
+        <span class="n">walls_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">ww</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ww</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">]</span>
+        <span class="n">layout</span><span class="p">[</span><span class="n">walls_rows</span><span class="p">,</span> <span class="n">walls_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_walls_with</span>
+        <span class="k">return</span> <span class="n">layout</span></div>
+
+<div class="viewcode-block" id="GridWorld.get_layout_img"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.get_layout_img">[docs]</a>    <span class="k">def</span> <span class="nf">get_layout_img</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">state_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colormap_name</span><span class="o">=</span><span class="s2">&quot;cool&quot;</span><span class="p">,</span> <span class="n">wall_color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an image array representing the value of `state_data` on</span>
+<span class="sd">        the gridworld layout.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state_data : np.array, default = None</span>
+<span class="sd">            Array of shape (self.observation_space.n,)</span>
+<span class="sd">        colormap_name : str, default = &#39;cool&#39;</span>
+<span class="sd">            Colormap name.</span>
+<span class="sd">            See https://matplotlib.org/tutorials/colors/colormaps.html</span>
+<span class="sd">        wall_color : tuple</span>
+<span class="sd">            RGB color for walls.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Gridworld image array of shape (nrows, ncols, 3).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># map data to [0.0, 1.0]</span>
+        <span class="k">if</span> <span class="n">state_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">state_data</span> <span class="o">=</span> <span class="n">state_data</span> <span class="o">-</span> <span class="n">state_data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">state_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">state_data</span> <span class="o">=</span> <span class="n">state_data</span> <span class="o">/</span> <span class="n">state_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="n">colormap_fn</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">colormap_name</span><span class="p">)</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layout_array</span><span class="p">(</span><span class="n">state_data</span><span class="p">,</span> <span class="n">fill_walls_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">scalar_map</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap_fn</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">layout</span><span class="p">[</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">]):</span>
+                    <span class="n">img</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">wall_color</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">img</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_map</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span>
+                        <span class="n">layout</span><span class="p">[</span><span class="n">rr</span><span class="p">,</span> <span class="n">cc</span><span class="p">]</span>
+                    <span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">img</span></div>
+
+<div class="viewcode-block" id="GridWorld.get_background"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.get_background">[docs]</a>    <span class="k">def</span> <span class="nf">get_background</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a scene (list of shapes) representing the background</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">()</span>
+
+        <span class="c1"># walls</span>
+        <span class="k">for</span> <span class="n">wall</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walls</span><span class="p">:</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">wall</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">GeometricPrimitive</span><span class="p">(</span><span class="s2">&quot;POLYGON&quot;</span><span class="p">)</span>
+            <span class="n">shape</span><span class="o">.</span><span class="n">set_color</span><span class="p">((</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">))</span>
+            <span class="n">shape</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="n">shape</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="n">shape</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">shape</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">bg</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># rewards</span>
+        <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span><span class="p">:</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="n">GeometricPrimitive</span><span class="p">(</span><span class="s2">&quot;POLYGON&quot;</span><span class="p">)</span>
+            <span class="n">rwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_at</span><span class="p">[(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rwd</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">rwd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">flag</span><span class="o">.</span><span class="n">set_color</span><span class="p">((</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">rwd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">flag</span><span class="o">.</span><span class="n">set_color</span><span class="p">((</span><span class="n">color</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+
+            <span class="n">x</span> <span class="o">+=</span> <span class="mf">0.5</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="mf">0.25</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">))</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">add_vertex</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">))</span>
+            <span class="n">bg</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">bg</span></div>
+
+<div class="viewcode-block" id="GridWorld.get_scene"><a class="viewcode-back" href="../../../../generated/rlberry_scool.envs.GridWorld.html#rlberry_scool.envs.GridWorld.get_scene">[docs]</a>    <span class="k">def</span> <span class="nf">get_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return scene (list of shapes) representing a given state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2coord</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span>  <span class="c1"># centering</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.5</span>  <span class="c1"># centering</span>
+
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">()</span>
+
+        <span class="n">agent</span> <span class="o">=</span> <span class="n">circle_shape</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">agent</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;POLYGON&quot;</span>
+        <span class="n">agent</span><span class="o">.</span><span class="n">set_color</span><span class="p">((</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="n">scene</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scene</span></div></div>
+</pre></div>
+
+      </div>
+    <div class="container">
+      <footer class="sk-content-footer">
+            &copy; 2023, rlberry team.
+      </footer>
+    </div>
+  </div>
+</div>
+<script src="../../../../_static/js/vendor/bootstrap.min.js"></script>
+
+<script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-22606712-2', 'auto');
+    ga('set', 'anonymizeIp', true);
+    ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+<script>
+$(document).ready(function() {
+    /* Add a [>>>] button on the top-right corner of code samples to hide
+     * the >>> and ... prompts and the output and thus make the code
+     * copyable. */
+    var div = $('.highlight-python .highlight,' +
+                '.highlight-python3 .highlight,' +
+                '.highlight-pycon .highlight,' +
+		'.highlight-default .highlight')
+    var pre = div.find('pre');
+
+    // get the styles from the current theme
+    pre.parent().parent().css('position', 'relative');
+    var hide_text = 'Hide prompts and outputs';
+    var show_text = 'Show prompts and outputs';
+
+    // create and add the button to all the code blocks that contain >>>
+    div.each(function(index) {
+        var jthis = $(this);
+        if (jthis.find('.gp').length > 0) {
+            var button = $('<span class="copybutton">&gt;&gt;&gt;</span>');
+            button.attr('title', hide_text);
+            button.data('hidden', 'false');
+            jthis.prepend(button);
+        }
+        // tracebacks (.gt) contain bare text elements that need to be
+        // wrapped in a span to work with .nextUntil() (see later)
+        jthis.find('pre:has(.gt)').contents().filter(function() {
+            return ((this.nodeType == 3) && (this.data.trim().length > 0));
+        }).wrap('<span>');
+    });
+
+    // define the behavior of the button when it's clicked
+    $('.copybutton').click(function(e){
+        e.preventDefault();
+        var button = $(this);
+        if (button.data('hidden') === 'false') {
+            // hide the code output
+            button.parent().find('.go, .gp, .gt').hide();
+            button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'hidden');
+            button.css('text-decoration', 'line-through');
+            button.attr('title', show_text);
+            button.data('hidden', 'true');
+        } else {
+            // show the code output
+            button.parent().find('.go, .gp, .gt').show();
+            button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'visible');
+            button.css('text-decoration', 'none');
+            button.attr('title', hide_text);
+            button.data('hidden', 'false');
+        }
+    });
+
+	/*** Add permalink buttons next to glossary terms ***/
+	$('dl.glossary > dt[id]').append(function() {
+		return ('<a class="headerlink" href="#' +
+			    this.getAttribute('id') +
+			    '" title="Permalink to this term">¶</a>');
+	});
+  /*** Hide navbar when scrolling down ***/
+  // Returns true when headerlink target matches hash in url
+  (function() {
+    hashTargetOnTop = function() {
+        var hash = window.location.hash;
+        if ( hash.length < 2 ) { return false; }
+
+        var target = document.getElementById( hash.slice(1) );
+        if ( target === null ) { return false; }
+
+        var top = target.getBoundingClientRect().top;
+        return (top < 2) && (top > -2);
+    };
+
+    // Hide navbar on load if hash target is on top
+    var navBar = document.getElementById("navbar");
+    var navBarToggler = document.getElementById("sk-navbar-toggler");
+    var navBarHeightHidden = "-" + navBar.getBoundingClientRect().height + "px";
+    var $window = $(window);
+
+    hideNavBar = function() {
+        navBar.style.top = navBarHeightHidden;
+    };
+
+    showNavBar = function() {
+        navBar.style.top = "0";
+    }
+
+    if (hashTargetOnTop()) {
+        hideNavBar()
+    }
+
+    var prevScrollpos = window.pageYOffset;
+    hideOnScroll = function(lastScrollTop) {
+        if (($window.width() < 768) && (navBarToggler.getAttribute("aria-expanded") === 'true')) {
+            return;
+        }
+        if (lastScrollTop > 2 && (prevScrollpos <= lastScrollTop) || hashTargetOnTop()){
+            hideNavBar()
+        } else {
+            showNavBar()
+        }
+        prevScrollpos = lastScrollTop;
+    };
+
+    /*** high performance scroll event listener***/
+    var raf = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.oRequestAnimationFrame;
+    var lastScrollTop = $window.scrollTop();
+
+    if (raf) {
+        loop();
+    }
+
+    function loop() {
+        var scrollTop = $window.scrollTop();
+        if (lastScrollTop === scrollTop) {
+            raf(loop);
+            return;
+        } else {
+            lastScrollTop = scrollTop;
+            hideOnScroll(lastScrollTop);
+            raf(loop);
+        }
+    }
+  })();
+});
+
+</script>
+    
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    
+</body>
+</html>

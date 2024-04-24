@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  <title>rlberry_scool.agents.linear.lsvi_ucb &mdash; rlberry-scool v0.7.3 documentation</title>
+  
+  <link rel="canonical" href="https://rlberry.readthedocs.io/en/stable/_modules/rlberry_scool/agents/linear/lsvi_ucb.html" />
+
+  
+
+  <link rel="stylesheet" href="../../../../_static/css/vendor/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+<script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+<script src="../../../../_static/jquery.js"></script> 
+</head>
+<body>
+
+
+<nav id="navbar" class="sk-docs-navbar navbar navbar-expand-md navbar-light bg-light py-0">
+  <div class="container-fluid sk-docs-container px-0">
+    <button
+      id="sk-navbar-toggler"
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="sk-navbar-collapse collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../../../../index.html">Index</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../../../../installation.html">Install</a>
+        </li>
+        <!-- <li class="nav-item"> -->
+        <!--   <a class="sk-nav-link nav-link" href="../../../../auto_examples/index.html">Examples</a> -->
+        <!-- </li> -->
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../../../../api.html">API</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="https://github.com/rlberry-py/rlberry-scool">github</a>
+        </li>
+        <!--
+        <li class="nav-item dropdown nav-more-item-dropdown">
+          <a class="sk-nav-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          </div>
+        </li>-->
+    </ul>
+      <div id="searchbox" role="search">
+          <div class="searchformwrapper">
+            <form action="https://duckduckgo.com/">
+            <input type="hidden" id="sites" name="sites" value="https://rlberry.readthedocs.io">
+            <input type="search" placeholder="Search &hellip;" value="" name="q" />
+            <input class="sk-search-text-btn" type="submit" value="Go" /></form>
+
+          </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="d-flex" id="sk-doc-wrapper">
+    <input type="checkbox" name="sk-toggle-checkbox" id="sk-toggle-checkbox">
+    <label id="sk-sidemenu-toggle" class="sk-btn-toggle-toc btn sk-btn-primary" for="sk-toggle-checkbox">Toggle Menu</label>
+    <div id="sk-sidebar-wrapper" class="border-right">
+      <div class="sk-sidebar-toc-wrapper">
+        <div class="sk-sidebar-toc-logo">
+
+        </div>
+	<br>
+            <div class="sk-sidebar-toc">
+              
+            </div>
+      </div>
+    </div>
+    <div id="sk-page-content-wrapper">
+      <div class="sk-page-content container-fluid body px-md-3" role="main">
+        
+  <h1>Source code for rlberry_scool.agents.linear.lsvi_ucb</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">rlberry.agents</span> <span class="kn">import</span> <span class="n">AgentWithSimplePolicy</span>
+<span class="kn">from</span> <span class="nn">gymnasium.spaces</span> <span class="kn">import</span> <span class="n">Discrete</span>
+
+<span class="kn">import</span> <span class="nn">rlberry</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">rlberry</span><span class="o">.</span><span class="n">logger</span>
+
+
+<span class="k">def</span> <span class="nf">run_lsvi</span><span class="p">(</span>
+    <span class="n">dim</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">,</span>
+    <span class="n">bonus_factor</span><span class="p">,</span>
+    <span class="n">lambda_mat_inv</span><span class="p">,</span>
+    <span class="n">reward_hist</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="p">,</span>
+    <span class="n">feat_hist</span><span class="p">,</span>
+    <span class="n">n_actions</span><span class="p">,</span>
+    <span class="n">feat_ns_all_actions</span><span class="p">,</span>
+    <span class="n">v_max</span><span class="p">,</span>
+    <span class="n">total_time_steps</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Least-Squares Value Iteration.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dim : int</span>
+<span class="sd">        Dimension of the features</span>
+<span class="sd">    horiton : int</span>
+
+<span class="sd">    bonus_factor : int</span>
+
+<span class="sd">    lambda_mat_inv : numpy array (dim, dim)</span>
+<span class="sd">        Inverse of the design matrix</span>
+
+<span class="sd">    reward_hist : numpy array (time,)</span>
+
+<span class="sd">    gamma : double</span>
+
+<span class="sd">    feat_hist : numpy array (time, dim)</span>
+
+<span class="sd">    n_actions : int</span>
+
+<span class="sd">    feat_ns_all_actions : numpy array (time, n_actions, dim)</span>
+<span class="sd">        History of next state features for all actions</span>
+
+<span class="sd">    vmax : double</span>
+<span class="sd">        Maximum value of the value function</span>
+
+<span class="sd">    total_time_steps : int</span>
+<span class="sd">        Current step count</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># run value iteration</span>
+    <span class="n">q_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">hh</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">horizon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">total_time_steps</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="c1"># compute q function at next state, q_ns</span>
+            <span class="n">q_ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_actions</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">aa</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_actions</span><span class="p">):</span>
+                <span class="c1">#</span>
+                <span class="n">feat_ns_aa</span> <span class="o">=</span> <span class="n">feat_ns_all_actions</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">inverse_counts</span> <span class="o">=</span> <span class="n">feat_ns_aa</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">lambda_mat_inv</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">feat_ns_aa</span><span class="p">))</span>
+                <span class="n">bonus</span> <span class="o">=</span> <span class="n">bonus_factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+                    <span class="n">inverse_counts</span>
+                <span class="p">)</span> <span class="o">+</span> <span class="n">v_max</span> <span class="o">*</span> <span class="n">inverse_counts</span> <span class="o">*</span> <span class="p">(</span><span class="n">bonus_factor</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+                <span class="c1">#</span>
+                <span class="n">q_ns</span><span class="p">[</span><span class="n">aa</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_ns_aa</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q_w</span><span class="p">[</span><span class="n">hh</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:])</span> <span class="o">+</span> <span class="n">bonus</span>
+                <span class="n">q_ns</span><span class="p">[</span><span class="n">aa</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">q_ns</span><span class="p">[</span><span class="n">aa</span><span class="p">],</span> <span class="n">v_max</span><span class="p">)</span>
+
+            <span class="c1"># compute regretion targets</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">reward_hist</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">q_ns</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">feat</span> <span class="o">=</span> <span class="n">feat_hist</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">target</span> <span class="o">*</span> <span class="n">feat</span>
+
+        <span class="c1"># solve M x = b, where x = q_w, and M = self.lambda_mat</span>
+        <span class="n">q_w</span><span class="p">[</span><span class="n">hh</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">lambda_mat_inv</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">q_w</span>
+
+
+<div class="viewcode-block" id="LSVIUCBAgent"><a class="viewcode-back" href="../../../../generated/rlberry_scool.agents.linear.LSVIUCBAgent.html#rlberry_scool.agents.linear.LSVIUCBAgent">[docs]</a><span class="k">class</span> <span class="nc">LSVIUCBAgent</span><span class="p">(</span><span class="n">AgentWithSimplePolicy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A version of Least-Squares Value Iteration with UCB (LSVI-UCB),</span>
+<span class="sd">    proposed by Jin et al. (2020).</span>
+
+<span class="sd">    If bonus_scale_factor is 0.0, performs random exploration.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The computation of exploration bonuses was adapted to match the &quot;simplified Bernstein&quot;</span>
+<span class="sd">    bonuses that works well empirically for UCBVI in the tabular case.</span>
+
+<span class="sd">    The transition probabilities are assumed to be *independent* of the timestep h.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    env : Model</span>
+<span class="sd">        Online model of an environment.</span>
+<span class="sd">    horizon : int</span>
+<span class="sd">        Maximum length of each episode.</span>
+<span class="sd">    feature_map_fn : function(env, kwargs)</span>
+<span class="sd">        Function that returns a feature map instance</span>
+<span class="sd">        (rlberry.agents.features.FeatureMap class).</span>
+<span class="sd">    feature_map_kwargs:</span>
+<span class="sd">        kwargs for feature_map_fn</span>
+<span class="sd">    gamma : double</span>
+<span class="sd">        Discount factor.</span>
+<span class="sd">    bonus_scale_factor : double</span>
+<span class="sd">        Constant by which to multiply the exploration bonus.</span>
+<span class="sd">    reg_factor : double</span>
+<span class="sd">        Linear regression regularization factor.</span>
+<span class="sd">    **kwargs : Keyword Arguments</span>
+<span class="sd">         Arguments to be passed to `AgentWithSimplePolicy.__init__(self, env, **kwargs)` (:class:`~rlberry.agents.AgentWithSimplePolicy`).</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Jin, C., Yang, Z., Wang, Z., &amp; Jordan, M. I. (2020, July).</span>
+<span class="sd">    Provably efficient reinforcement learning with linear</span>
+<span class="sd">    function approximation. In Conference on Learning Theory (pp. 2137-2143).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;LSVI-UCB&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="p">,</span>
+        <span class="n">feature_map_fn</span><span class="p">,</span>
+        <span class="n">feature_map_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+        <span class="n">bonus_scale_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">reg_factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="n">AgentWithSimplePolicy</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span> <span class="o">=</span> <span class="n">horizon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bonus_scale_factor</span> <span class="o">=</span> <span class="n">bonus_scale_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg_factor</span> <span class="o">=</span> <span class="n">reg_factor</span>
+        <span class="n">feature_map_kwargs</span> <span class="o">=</span> <span class="n">feature_map_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span> <span class="o">=</span> <span class="n">feature_map_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">,</span> <span class="o">**</span><span class="n">feature_map_kwargs</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bonus_scale_factor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;LSVI-Random-Expl&quot;</span>
+
+        <span class="c1"># maximum value</span>
+        <span class="n">r_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">reward_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">reward_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">r_range</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: Reward range is infinity. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;Clipping it to 1.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">r_range</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span> <span class="o">=</span> <span class="n">r_range</span> <span class="o">*</span> <span class="n">horizon</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">r_range</span>
+                <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">))</span>
+                <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="p">,</span> <span class="n">Discrete</span>
+        <span class="p">),</span> <span class="s2">&quot;LSVI-UCB requires discrete actions.&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># attributes initialized in reset()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># lambda matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># inverse of lambda matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_vec</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># vector representation of Q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_policy</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># representation of Q for final policy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_hist</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># reward history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_hist</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># state history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_hist</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># action history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nstate_hist</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># next state history</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">feat_hist</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># feature history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feat_ns_all_actions</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># next state features for all actions</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># aux variables (init in reset() too)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rewards</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_time_steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_factor</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_hist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_hist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nstate_hist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># episode rewards</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feat_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feat_ns_all_actions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_policy</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="LSVIUCBAgent.fit"><a class="viewcode-back" href="../../../../generated/rlberry_scool.agents.linear.LSVIUCBAgent.html#rlberry_scool.agents.linear.LSVIUCBAgent.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train the agent using the provided environment.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        budget: int</span>
+<span class="sd">            number of episodes. Each episode runs for self.horizon unless it</span>
+<span class="sd">            enconters a terminal state in which case it stops early.</span>
+<span class="sd">            Warning: Calling fit() more than once will reset the algorithm</span>
+<span class="sd">            (to realocate memory according to the number of episodes)</span>
+<span class="sd">        **kwargs : Keyword Arguments</span>
+<span class="sd">            Extra arguments. Not used for this agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">kwargs</span>
+
+        <span class="c1"># Allocate memory according to budget.</span>
+        <span class="c1"># TODO: avoid the need to reset() the algorithm if fit() is called again.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;[LSVI-UCB]: Calling fit() more than once will reset the algorithm&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot; (to realocate memory according to the number of episodes).&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="o">=</span> <span class="n">budget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_episode</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bonus_scale_factor</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">ep</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_episodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># update Q function representation</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">w_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_lsvi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bonus_scale_factor</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_lsvi</span><span class="p">(</span><span class="n">bonus_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span></div>
+
+<div class="viewcode-block" id="LSVIUCBAgent.policy"><a class="viewcode-back" href="../../../../generated/rlberry_scool.agents.linear.LSVIUCBAgent.html#rlberry_scool.agents.linear.LSVIUCBAgent.policy">[docs]</a>    <span class="k">def</span> <span class="nf">policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+        <span class="n">q_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_policy</span>
+        <span class="k">assert</span> <span class="n">q_w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="c1">#</span>
+        <span class="n">q_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_q_vec</span><span class="p">(</span><span class="n">q_w</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">q_vec</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_optimistic_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">hh</span><span class="p">):</span>
+        <span class="n">q_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_vec</span><span class="p">[</span><span class="n">hh</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">q_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_q_vec</span><span class="p">(</span><span class="n">q_w</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bonus_scale_factor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">q_vec</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">run_episode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">observation</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">episode_rewards</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">hh</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bonus_scale_factor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimistic_policy</span><span class="p">(</span><span class="n">observation</span><span class="p">,</span> <span class="n">hh</span><span class="p">)</span>
+
+            <span class="n">next_observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+                <span class="n">action</span>
+            <span class="p">)</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+
+            <span class="n">feat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+            <span class="n">outer_prod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+            <span class="n">inv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span>
+
+            <span class="c1">#</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+            <span class="c1"># update inverse</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span> <span class="o">-=</span> <span class="p">(</span><span class="n">inv</span> <span class="o">@</span> <span class="n">outer_prod</span> <span class="o">@</span> <span class="n">inv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">feat</span> <span class="o">@</span> <span class="n">inv</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">feat</span><span class="p">)</span>
+
+            <span class="c1"># update history</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reward_hist</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time_steps</span><span class="p">]</span> <span class="o">=</span> <span class="n">reward</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nstate_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_observation</span><span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_time_steps</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feat_hist</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">aa</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">feat_ns_all_actions</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="n">next_observation</span><span class="p">,</span> <span class="n">aa</span>
+                <span class="p">)</span>
+
+            <span class="c1"># increments</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_time_steps</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">episode_rewards</span> <span class="o">+=</span> <span class="n">reward</span>
+
+            <span class="c1">#</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="n">next_observation</span>
+            <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c1"># store data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rewards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">episode</span><span class="p">]</span> <span class="o">=</span> <span class="n">episode_rewards</span>
+
+        <span class="c1"># update ep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;episode_rewards&quot;</span><span class="p">,</span> <span class="n">episode_rewards</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">episode_rewards</span>
+
+    <span class="k">def</span> <span class="nf">_compute_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q_w</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">bonus_factor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;q_w is the vector representation of the Q function.&quot;&quot;&quot;</span>
+        <span class="n">feat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">inverse_counts</span> <span class="o">=</span> <span class="n">feat</span> <span class="o">@</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">feat</span><span class="p">)</span>
+        <span class="n">bonus</span> <span class="o">=</span> <span class="n">bonus_factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">inverse_counts</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span> <span class="o">*</span> <span class="n">inverse_counts</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">bonus_factor</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+        <span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q_w</span><span class="p">)</span> <span class="o">+</span> <span class="n">bonus</span>
+        <span class="k">return</span> <span class="n">q</span>
+
+    <span class="k">def</span> <span class="nf">_compute_q_vec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q_w</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">bonus_factor</span><span class="p">):</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
+        <span class="n">q_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">aa</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+            <span class="c1"># q_vec[aa] = self._compute_q(q_w, state, aa, bonus_factor)</span>
+            <span class="n">feat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_map</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">aa</span><span class="p">)</span>
+            <span class="n">inverse_counts</span> <span class="o">=</span> <span class="n">feat</span> <span class="o">@</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">feat</span><span class="p">)</span>
+            <span class="n">bonus</span> <span class="o">=</span> <span class="n">bonus_factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+                <span class="n">inverse_counts</span>
+            <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span> <span class="o">*</span> <span class="n">inverse_counts</span> <span class="o">*</span> <span class="p">(</span><span class="n">bonus_factor</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">q_vec</span><span class="p">[</span><span class="n">aa</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q_w</span><span class="p">)</span> <span class="o">+</span> <span class="n">bonus</span>
+            <span class="c1"># q_vec[aa] = min(q_vec[aa], self.v_max)   # !!!!!!!!!</span>
+        <span class="k">return</span> <span class="n">q_vec</span>
+
+    <span class="k">def</span> <span class="nf">_run_lsvi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bonus_factor</span><span class="p">):</span>
+        <span class="c1"># run value iteration</span>
+        <span class="n">q_w</span> <span class="o">=</span> <span class="n">run_lsvi</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">,</span>
+            <span class="n">bonus_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lambda_mat_inv</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reward_hist</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feat_hist</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feat_ns_all_actions</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">v_max</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_time_steps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">q_w</span></div>
+</pre></div>
+
+      </div>
+    <div class="container">
+      <footer class="sk-content-footer">
+            &copy; 2023, rlberry team.
+      </footer>
+    </div>
+  </div>
+</div>
+<script src="../../../../_static/js/vendor/bootstrap.min.js"></script>
+
+<script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-22606712-2', 'auto');
+    ga('set', 'anonymizeIp', true);
+    ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+<script>
+$(document).ready(function() {
+    /* Add a [>>>] button on the top-right corner of code samples to hide
+     * the >>> and ... prompts and the output and thus make the code
+     * copyable. */
+    var div = $('.highlight-python .highlight,' +
+                '.highlight-python3 .highlight,' +
+                '.highlight-pycon .highlight,' +
+		'.highlight-default .highlight')
+    var pre = div.find('pre');
+
+    // get the styles from the current theme
+    pre.parent().parent().css('position', 'relative');
+    var hide_text = 'Hide prompts and outputs';
+    var show_text = 'Show prompts and outputs';
+
+    // create and add the button to all the code blocks that contain >>>
+    div.each(function(index) {
+        var jthis = $(this);
+        if (jthis.find('.gp').length > 0) {
+            var button = $('<span class="copybutton">&gt;&gt;&gt;</span>');
+            button.attr('title', hide_text);
+            button.data('hidden', 'false');
+            jthis.prepend(button);
+        }
+        // tracebacks (.gt) contain bare text elements that need to be
+        // wrapped in a span to work with .nextUntil() (see later)
+        jthis.find('pre:has(.gt)').contents().filter(function() {
+            return ((this.nodeType == 3) && (this.data.trim().length > 0));
+        }).wrap('<span>');
+    });
+
+    // define the behavior of the button when it's clicked
+    $('.copybutton').click(function(e){
+        e.preventDefault();
+        var button = $(this);
+        if (button.data('hidden') === 'false') {
+            // hide the code output
+            button.parent().find('.go, .gp, .gt').hide();
+            button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'hidden');
+            button.css('text-decoration', 'line-through');
+            button.attr('title', show_text);
+            button.data('hidden', 'true');
+        } else {
+            // show the code output
+            button.parent().find('.go, .gp, .gt').show();
+            button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'visible');
+            button.css('text-decoration', 'none');
+            button.attr('title', hide_text);
+            button.data('hidden', 'false');
+        }
+    });
+
+	/*** Add permalink buttons next to glossary terms ***/
+	$('dl.glossary > dt[id]').append(function() {
+		return ('<a class="headerlink" href="#' +
+			    this.getAttribute('id') +
+			    '" title="Permalink to this term">¶</a>');
+	});
+  /*** Hide navbar when scrolling down ***/
+  // Returns true when headerlink target matches hash in url
+  (function() {
+    hashTargetOnTop = function() {
+        var hash = window.location.hash;
+        if ( hash.length < 2 ) { return false; }
+
+        var target = document.getElementById( hash.slice(1) );
+        if ( target === null ) { return false; }
+
+        var top = target.getBoundingClientRect().top;
+        return (top < 2) && (top > -2);
+    };
+
+    // Hide navbar on load if hash target is on top
+    var navBar = document.getElementById("navbar");
+    var navBarToggler = document.getElementById("sk-navbar-toggler");
+    var navBarHeightHidden = "-" + navBar.getBoundingClientRect().height + "px";
+    var $window = $(window);
+
+    hideNavBar = function() {
+        navBar.style.top = navBarHeightHidden;
+    };
+
+    showNavBar = function() {
+        navBar.style.top = "0";
+    }
+
+    if (hashTargetOnTop()) {
+        hideNavBar()
+    }
+
+    var prevScrollpos = window.pageYOffset;
+    hideOnScroll = function(lastScrollTop) {
+        if (($window.width() < 768) && (navBarToggler.getAttribute("aria-expanded") === 'true')) {
+            return;
+        }
+        if (lastScrollTop > 2 && (prevScrollpos <= lastScrollTop) || hashTargetOnTop()){
+            hideNavBar()
+        } else {
+            showNavBar()
+        }
+        prevScrollpos = lastScrollTop;
+    };
+
+    /*** high performance scroll event listener***/
+    var raf = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.oRequestAnimationFrame;
+    var lastScrollTop = $window.scrollTop();
+
+    if (raf) {
+        loop();
+    }
+
+    function loop() {
+        var scrollTop = $window.scrollTop();
+        if (lastScrollTop === scrollTop) {
+            raf(loop);
+            return;
+        } else {
+            lastScrollTop = scrollTop;
+            hideOnScroll(lastScrollTop);
+            raf(loop);
+        }
+    }
+  })();
+});
+
+</script>
+    
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    
+</body>
+</html>

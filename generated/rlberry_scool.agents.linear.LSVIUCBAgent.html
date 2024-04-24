@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  <title>rlberry_scool.agents.linear.LSVIUCBAgent &mdash; rlberry-scool v0.7.3 documentation</title>
+  
+  <link rel="canonical" href="https://rlberry.readthedocs.io/en/stable/generated/rlberry_scool.agents.linear.LSVIUCBAgent.html" />
+
+  
+
+  <link rel="stylesheet" href="../_static/css/vendor/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+<script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script> 
+</head>
+<body>
+
+
+<nav id="navbar" class="sk-docs-navbar navbar navbar-expand-md navbar-light bg-light py-0">
+  <div class="container-fluid sk-docs-container px-0">
+    <button
+      id="sk-navbar-toggler"
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="sk-navbar-collapse collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../index.html">Index</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../installation.html">Install</a>
+        </li>
+        <!-- <li class="nav-item"> -->
+        <!--   <a class="sk-nav-link nav-link" href="../auto_examples/index.html">Examples</a> -->
+        <!-- </li> -->
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="../api.html">API</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link" href="https://github.com/rlberry-py/rlberry-scool">github</a>
+        </li>
+        <!--
+        <li class="nav-item dropdown nav-more-item-dropdown">
+          <a class="sk-nav-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          </div>
+        </li>-->
+    </ul>
+      <div id="searchbox" role="search">
+          <div class="searchformwrapper">
+            <form action="https://duckduckgo.com/">
+            <input type="hidden" id="sites" name="sites" value="https://rlberry.readthedocs.io">
+            <input type="search" placeholder="Search &hellip;" value="" name="q" />
+            <input class="sk-search-text-btn" type="submit" value="Go" /></form>
+
+          </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="d-flex" id="sk-doc-wrapper">
+    <input type="checkbox" name="sk-toggle-checkbox" id="sk-toggle-checkbox">
+    <label id="sk-sidemenu-toggle" class="sk-btn-toggle-toc btn sk-btn-primary" for="sk-toggle-checkbox">Toggle Menu</label>
+    <div id="sk-sidebar-wrapper" class="border-right">
+      <div class="sk-sidebar-toc-wrapper">
+        <div class="sk-sidebar-toc-logo">
+
+        </div>
+	<br>
+            <div class="sk-sidebar-toc">
+              <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rlberry_scool.agents.linear</span></code>.LSVIUCBAgent</a><ul>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent</span></code></a><ul>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.eval"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.eval()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.fit"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.fit()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.get_params"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.get_params()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.load"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.load()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.output_dir"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.output_dir</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.policy"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.policy()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.reseed"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.reseed()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.rng"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.rng</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.sample_parameters"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.sample_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.save"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.save()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.set_writer"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.set_writer()</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.thread_shared_data"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.thread_shared_data</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.unique_id"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.unique_id</span></code></a></li>
+<li><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.writer"><code class="docutils literal notranslate"><span class="pre">LSVIUCBAgent.writer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+      </div>
+    </div>
+    <div id="sk-page-content-wrapper">
+      <div class="sk-page-content container-fluid body px-md-3" role="main">
+        
+  <section id="rlberry-scool-agents-linear-lsviucbagent">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">rlberry_scool.agents.linear</span></code>.LSVIUCBAgent<a class="headerlink" href="#rlberry-scool-agents-linear-lsviucbagent" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rlberry_scool.agents.linear.</span></span><span class="sig-name descname"><span class="pre">LSVIUCBAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_map_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_map_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonus_scale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rlberry_scool/agents/linear/lsvi_ucb.html#LSVIUCBAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AgentWithSimplePolicy</span></code></p>
+<p>A version of Least-Squares Value Iteration with UCB (LSVI-UCB),
+proposed by Jin et al. (2020).</p>
+<p>If bonus_scale_factor is 0.0, performs random exploration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>env</strong><span class="classifier">Model</span></dt><dd><p>Online model of an environment.</p>
+</dd>
+<dt><strong>horizon</strong><span class="classifier">int</span></dt><dd><p>Maximum length of each episode.</p>
+</dd>
+<dt><strong>feature_map_fn</strong><span class="classifier">function(env, kwargs)</span></dt><dd><p>Function that returns a feature map instance
+(rlberry.agents.features.FeatureMap class).</p>
+</dd>
+<dt><strong>feature_map_kwargs:</strong></dt><dd><p>kwargs for feature_map_fn</p>
+</dd>
+<dt><strong>gamma</strong><span class="classifier">double</span></dt><dd><p>Discount factor.</p>
+</dd>
+<dt><strong>bonus_scale_factor</strong><span class="classifier">double</span></dt><dd><p>Constant by which to multiply the exploration bonus.</p>
+</dd>
+<dt><strong>reg_factor</strong><span class="classifier">double</span></dt><dd><p>Linear regression regularization factor.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">Keyword Arguments</span></dt><dd><p>Arguments to be passed to <cite>AgentWithSimplePolicy.__init__(self, env, **kwargs)</cite> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AgentWithSimplePolicy</span></code>).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.output_dir" title="rlberry_scool.agents.linear.LSVIUCBAgent.output_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_dir</span></code></a></dt><dd><p>Directory that the agent can use to store data.</p>
+</dd>
+<dt><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.rng" title="rlberry_scool.agents.linear.LSVIUCBAgent.rng"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rng</span></code></a></dt><dd><p>Random number generator.</p>
+</dd>
+<dt><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.thread_shared_data" title="rlberry_scool.agents.linear.LSVIUCBAgent.thread_shared_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thread_shared_data</span></code></a></dt><dd><p>Data shared by agent instances among different threads.</p>
+</dd>
+<dt><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.unique_id" title="rlberry_scool.agents.linear.LSVIUCBAgent.unique_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_id</span></code></a></dt><dd><p>Unique identifier for the agent instance.</p>
+</dd>
+<dt><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.writer" title="rlberry_scool.agents.linear.LSVIUCBAgent.writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">writer</span></code></a></dt><dd><p>Writer object to log the output (e.g.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The computation of exploration bonuses was adapted to match the “simplified Bernstein”
+bonuses that works well empirically for UCBVI in the tabular case.</p>
+<p>The transition probabilities are assumed to be <em>independent</em> of the timestep h.</p>
+<p class="rubric">References</p>
+<p>Jin, C., Yang, Z., Wang, Z., &amp; Jordan, M. I. (2020, July).
+Provably efficient reinforcement learning with linear
+function approximation. In Conference on Learning Theory (pp. 2137-2143).</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.eval" title="rlberry_scool.agents.linear.LSVIUCBAgent.eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code></a>([eval_horizon, n_simulations, gamma])</p></td>
+<td><p>Monte-Carlo policy evaluation <a class="reference internal" href="#r045097923be4-1" id="id1">[1]</a> method to estimate the mean discounted reward using the current policy on the evaluation environment.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.fit" title="rlberry_scool.agents.linear.LSVIUCBAgent.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(budget, **kwargs)</p></td>
+<td><p>Train the agent using the provided environment.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.get_params" title="rlberry_scool.agents.linear.LSVIUCBAgent.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
+<td><p>Get parameters for this agent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.load" title="rlberry_scool.agents.linear.LSVIUCBAgent.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(filename, **kwargs)</p></td>
+<td><p>Load agent object from filepath.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.policy" title="rlberry_scool.agents.linear.LSVIUCBAgent.policy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">policy</span></code></a>(observation)</p></td>
+<td><p>Abstract method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.reseed" title="rlberry_scool.agents.linear.LSVIUCBAgent.reseed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reseed</span></code></a>([seed_seq])</p></td>
+<td><p>Get new random number generator for the agent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.sample_parameters" title="rlberry_scool.agents.linear.LSVIUCBAgent.sample_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_parameters</span></code></a>(trial)</p></td>
+<td><p>Sample hyperparameters for hyperparam optimization using Optuna (<a class="reference external" href="https://optuna.org/">https://optuna.org/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.save" title="rlberry_scool.agents.linear.LSVIUCBAgent.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(filename)</p></td>
+<td><p>Save agent object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rlberry_scool.agents.linear.LSVIUCBAgent.set_writer" title="rlberry_scool.agents.linear.LSVIUCBAgent.set_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_writer</span></code></a>(writer)</p></td>
+<td><p>set self._writer.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>reset</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>run_episode</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_simulations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monte-Carlo policy evaluation <a class="reference internal" href="#r045097923be4-1" id="id2">[1]</a> method to estimate the mean discounted reward using the current policy on the evaluation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>eval_horizon</strong><span class="classifier">int, optional, default: 10**5</span></dt><dd><p>Maximum episode length, representing the horizon for each simulation.</p>
+</dd>
+<dt><strong>n_simulations</strong><span class="classifier">int, optional, default: 10</span></dt><dd><p>Number of Monte Carlo simulations to perform for the evaluation.</p>
+</dd>
+<dt><strong>gamma</strong><span class="classifier">float, optional, default: 1.0</span></dt><dd><p>Discount factor for future rewards.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>The mean value over ‘n_simulations’ of the sum of rewards obtained in each simulation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r045097923be4-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Sutton, R. S., &amp; Barto, A. G. (2018). Reinforcement Learning: An Introduction.
+MIT Press.</p>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">budget</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rlberry_scool/agents/linear/lsvi_ucb.html#LSVIUCBAgent.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the agent using the provided environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>budget: int</strong></dt><dd><p>number of episodes. Each episode runs for self.horizon unless it
+enconters a terminal state in which case it stops early.
+Warning: Calling fit() more than once will reset the algorithm
+(to realocate memory according to the number of episodes)</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">Keyword Arguments</span></dt><dd><p>Extra arguments. Not used for this agent.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>deep</strong><span class="classifier">bool, default=True</span></dt><dd><p>If True, will return the parameters for this agent and
+contained subobjects.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Parameter names mapped to their values.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load agent object from filepath.</p>
+<p>If overridden, save() method must also be overriden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename: str</strong></dt><dd><p>Path to the object (pickle) to load.</p>
+</dd>
+<dt><strong>**kwargs: Keyword Arguments</strong></dt><dd><p>Arguments required by the __init__ method of the Agent subclass to load.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.output_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dir</span></span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.output_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directory that the agent can use to store data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.policy">
+<span class="sig-name descname"><span class="pre">policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rlberry_scool/agents/linear/lsvi_ucb.html#LSVIUCBAgent.policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method.
+The policy function takes an observation from the environment and returns an action.
+The specific implementation of the policy function depends on the agent’s learning algorithm
+or strategy, which can be deterministic or stochastic.
+Parameters
+———-
+observation (any): An observation from the environment.
+Returns
+——-
+action (any): The action to be taken based on the provided observation.
+Notes
+—–
+The data type of ‘observation’ and ‘action’ can vary depending on the specific agent
+and the environment it interacts with.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.reseed">
+<span class="sig-name descname"><span class="pre">reseed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.reseed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get new random number generator for the agent.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>seed_seq</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.SeedSequence</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rlberry.seeding.seeder.Seeder</span></code> or int, default</span><span class="classifier">None</span></dt><dd><p>Seed sequence from which to spawn the random number generator.
+If None, generate random seed.
+If int, use as entropy for SeedSequence.
+If seeder, use seeder.seed_seq</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.rng">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rng</span></span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.rng" title="Permalink to this definition">¶</a></dt>
+<dd><p>Random number generator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.sample_parameters">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.sample_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample hyperparameters for hyperparam optimization using
+Optuna (<a class="reference external" href="https://optuna.org/">https://optuna.org/</a>)</p>
+<p>Note: only the kwargs sent to __init__ are optimized. Make sure to
+include in the Agent constructor all “optimizable” parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>trial: optuna.trial</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save agent object. By default, the agent is pickled.</p>
+<p>If overridden, the load() method must also be overriden.</p>
+<p>Before saving, consider setting writer to None if it can’t be pickled (tensorboard writers
+keep references to files and cannot be pickled).</p>
+<p>Note: dill[R97f64b512054-1]_ is used when pickle fails
+(see <a class="reference external" href="https://stackoverflow.com/a/25353243">https://stackoverflow.com/a/25353243</a>, for instance).
+Pickle is tried first, since it is faster.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename: Path or str</strong></dt><dd><p>File in which to save the Agent.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>pathlib.Path</dt><dd><p>If save() is successful, a Path object corresponding to the filename is returned.
+Otherwise, None is returned.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The returned filename might differ from the input filename: For instance,
+..</p>
+</div>
+<dl class="simple">
+<dt>the method can append the correct suffix to the name before saving.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r97f64b512054-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://github.com/uqfoundation/dill">https://github.com/uqfoundation/dill</a></p>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.set_writer">
+<span class="sig-name descname"><span class="pre">set_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.set_writer" title="Permalink to this definition">¶</a></dt>
+<dd><p>set self._writer. If is not None, add parameters values to writer.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.thread_shared_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">thread_shared_data</span></span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.thread_shared_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data shared by agent instances among different threads.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.unique_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.unique_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique identifier for the agent instance. Can be used, for example, to create files/directories for the agent to log data safely.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rlberry_scool.agents.linear.LSVIUCBAgent.writer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">writer</span></span><a class="headerlink" href="#rlberry_scool.agents.linear.LSVIUCBAgent.writer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writer object to log the output (e.g. tensorboard SummaryWriter)..</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="clearer"></div></section>
+
+
+      </div>
+    <div class="container">
+      <footer class="sk-content-footer">
+            &copy; 2023, rlberry team.
+          <a href="../_sources/generated/rlberry_scool.agents.linear.LSVIUCBAgent.rst.txt" rel="nofollow">Show this page source</a>
+      </footer>
+    </div>
+  </div>
+</div>
+<script src="../_static/js/vendor/bootstrap.min.js"></script>
+
+<script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-22606712-2', 'auto');
+    ga('set', 'anonymizeIp', true);
+    ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+<script>
+$(document).ready(function() {
+    /* Add a [>>>] button on the top-right corner of code samples to hide
+     * the >>> and ... prompts and the output and thus make the code
+     * copyable. */
+    var div = $('.highlight-python .highlight,' +
+                '.highlight-python3 .highlight,' +
+                '.highlight-pycon .highlight,' +
+		'.highlight-default .highlight')
+    var pre = div.find('pre');
+
+    // get the styles from the current theme
+    pre.parent().parent().css('position', 'relative');
+    var hide_text = 'Hide prompts and outputs';
+    var show_text = 'Show prompts and outputs';
+
+    // create and add the button to all the code blocks that contain >>>
+    div.each(function(index) {
+        var jthis = $(this);
+        if (jthis.find('.gp').length > 0) {
+            var button = $('<span class="copybutton">&gt;&gt;&gt;</span>');
+            button.attr('title', hide_text);
+            button.data('hidden', 'false');
+            jthis.prepend(button);
+        }
+        // tracebacks (.gt) contain bare text elements that need to be
+        // wrapped in a span to work with .nextUntil() (see later)
+        jthis.find('pre:has(.gt)').contents().filter(function() {
+            return ((this.nodeType == 3) && (this.data.trim().length > 0));
+        }).wrap('<span>');
+    });
+
+    // define the behavior of the button when it's clicked
+    $('.copybutton').click(function(e){
+        e.preventDefault();
+        var button = $(this);
+        if (button.data('hidden') === 'false') {
+            // hide the code output
+            button.parent().find('.go, .gp, .gt').hide();
+            button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'hidden');
+            button.css('text-decoration', 'line-through');
+            button.attr('title', show_text);
+            button.data('hidden', 'true');
+        } else {
+            // show the code output
+            button.parent().find('.go, .gp, .gt').show();
+            button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'visible');
+            button.css('text-decoration', 'none');
+            button.attr('title', hide_text);
+            button.data('hidden', 'false');
+        }
+    });
+
+	/*** Add permalink buttons next to glossary terms ***/
+	$('dl.glossary > dt[id]').append(function() {
+		return ('<a class="headerlink" href="#' +
+			    this.getAttribute('id') +
+			    '" title="Permalink to this term">¶</a>');
+	});
+  /*** Hide navbar when scrolling down ***/
+  // Returns true when headerlink target matches hash in url
+  (function() {
+    hashTargetOnTop = function() {
+        var hash = window.location.hash;
+        if ( hash.length < 2 ) { return false; }
+
+        var target = document.getElementById( hash.slice(1) );
+        if ( target === null ) { return false; }
+
+        var top = target.getBoundingClientRect().top;
+        return (top < 2) && (top > -2);
+    };
+
+    // Hide navbar on load if hash target is on top
+    var navBar = document.getElementById("navbar");
+    var navBarToggler = document.getElementById("sk-navbar-toggler");
+    var navBarHeightHidden = "-" + navBar.getBoundingClientRect().height + "px";
+    var $window = $(window);
+
+    hideNavBar = function() {
+        navBar.style.top = navBarHeightHidden;
+    };
+
+    showNavBar = function() {
+        navBar.style.top = "0";
+    }
+
+    if (hashTargetOnTop()) {
+        hideNavBar()
+    }
+
+    var prevScrollpos = window.pageYOffset;
+    hideOnScroll = function(lastScrollTop) {
+        if (($window.width() < 768) && (navBarToggler.getAttribute("aria-expanded") === 'true')) {
+            return;
+        }
+        if (lastScrollTop > 2 && (prevScrollpos <= lastScrollTop) || hashTargetOnTop()){
+            hideNavBar()
+        } else {
+            showNavBar()
+        }
+        prevScrollpos = lastScrollTop;
+    };
+
+    /*** high performance scroll event listener***/
+    var raf = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.oRequestAnimationFrame;
+    var lastScrollTop = $window.scrollTop();
+
+    if (raf) {
+        loop();
+    }
+
+    function loop() {
+        var scrollTop = $window.scrollTop();
+        if (lastScrollTop === scrollTop) {
+            raf(loop);
+            return;
+        } else {
+            lastScrollTop = scrollTop;
+            hideOnScroll(lastScrollTop);
+            raf(loop);
+        }
+    }
+  })();
+});
+
+</script>
+    
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    
+</body>
+</html>

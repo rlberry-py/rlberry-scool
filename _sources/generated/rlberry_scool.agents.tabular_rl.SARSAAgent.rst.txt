@@ -1,0 +1,12 @@
+﻿:mod:`rlberry_scool.agents.tabular_rl`.SARSAAgent
+========================================================
+
+.. currentmodule:: rlberry_scool.agents.tabular_rl
+
+.. autoclass:: SARSAAgent
+
+.. include:: rlberry_scool.agents.tabular_rl.SARSAAgent.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>
